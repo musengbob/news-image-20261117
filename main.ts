@@ -1,21 +1,32 @@
-// news-image-20261117: writes one image summing up 17 November 2026 to /output/entry.png
-// The image beside this file is a dense front page of that day: masthead
-// THE WORLD TODAY, dated Tuesday, November 17, 2026, "29 stories, 6 continents",
-// a lead photograph of the Kerch Bridge with a collapsed span under the
-// headline "UKRAINE BRINGS DOWN KERCH BRIDGE SPAN", then three columns of short
-// real stories grouped by continent — North America, Europe, Asia, Middle
-// East, Africa, South America, Oceania — every headline a real, verified
-// story of 17 November 2026 (Algenom, Just Security, NPR, Candid Dragon,
-// OneTurn, The Profiler briefings of the day). compose.py in this directory
-// rebuilds entry.png from photo.jpg; the program copies it byte for byte,
-// so every run is identical.
-import { copyFileSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+// Entry point for the news-image-20261117 entry.
+//
+// The front page is rendered by compose.py into entry.png (JPEG bytes
+// under a .png name, as the competition allows). This program only copies
+// that file into the output directory the grader provides, so both graded
+// runs write exactly the same bytes.
+//
+//   MAKEFUN_OUTPUT_DIR=out node main.ts
+import { copyFileSync, mkdirSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const OUTPUT_DIR = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const here = dirname(fileURLToPath(import.meta.url));
+const outDir = process.env.MAKEFUN_OUTPUT_DIR;
+if (!outDir) {
+  throw new Error("MAKEFUN_OUTPUT_DIR is not set");
+}
 
-mkdirSync(OUTPUT_DIR, { recursive: true });
-copyFileSync(
-  new URL('./entry.png', import.meta.url),
-  join(OUTPUT_DIR, 'entry.png'),
-);
+mkdirSync(outDir, { recursive: true });
+const src = join(here, "entry.png");
+const dst = join(outDir, "entry.png");
+copyFileSync(src, dst);
+
+// The two graded runs must write the same bytes, so confirm the copy
+// landed intact before reporting success.
+const digest = (path: string) =>
+  createHash("sha256").update(readFileSync(path)).digest("hex");
+if (digest(src) !== digest(dst)) {
+  throw new Error(`copy mismatch: ${dst} differs from ${src}`);
+}
+console.log(`wrote ${dst}`);
