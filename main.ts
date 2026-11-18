@@ -1,32 +1,33 @@
-// Entry point for the news-image-20261117 entry.
+// news-image-20261117 round 2 — "THE WORLD TODAY", Tuesday 17 November 2026.
+// Node 22, standard library only. The entry image is the entry.png beside
+// this file (built by compose.py); this program copies it to the output
+// directory the grader reads. It runs with no network and writes the same
+// bytes on every run.
 //
-// The front page is rendered by compose.py into entry.png (JPEG bytes
-// under a .png name, as the competition allows). This program only copies
-// that file into the output directory the grader provides, so both graded
-// runs write exactly the same bytes.
-//
-//   MAKEFUN_OUTPUT_DIR=out node main.ts
-import { copyFileSync, mkdirSync, readFileSync } from "node:fs";
-import { createHash } from "node:crypto";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+// Local check:
+//   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+
+import { copyFileSync, mkdirSync, statSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const outDir = process.env.MAKEFUN_OUTPUT_DIR;
-if (!outDir) {
-  throw new Error("MAKEFUN_OUTPUT_DIR is not set");
+const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const source = join(here, 'entry.png');
+
+// The gate refuses anything over 1 MiB: fail loudly here instead of
+// submitting an entry the scorer would reject.
+const MAX_BYTES = 1048576;
+const size = statSync(source).size;
+if (size > MAX_BYTES) {
+  throw new Error(`entry.png is ${size} bytes, over the ${MAX_BYTES} limit`);
 }
 
 mkdirSync(outDir, { recursive: true });
-const src = join(here, "entry.png");
-const dst = join(outDir, "entry.png");
-copyFileSync(src, dst);
+const dest = join(outDir, 'entry.png');
+copyFileSync(source, dest);
 
-// The two graded runs must write the same bytes, so confirm the copy
-// landed intact before reporting success.
-const digest = (path: string) =>
-  createHash("sha256").update(readFileSync(path)).digest("hex");
-if (digest(src) !== digest(dst)) {
-  throw new Error(`copy mismatch: ${dst} differs from ${src}`);
+// Verify the copy landed whole: a short write must never pass silently.
+if (statSync(dest).size !== size) {
+  throw new Error(`short copy: wrote ${statSync(dest).size} of ${size} bytes`);
 }
-console.log(`wrote ${dst}`);

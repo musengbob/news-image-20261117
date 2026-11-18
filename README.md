@@ -1,24 +1,45 @@
-# news-image-20261117
+# THE WORLD TODAY — Tuesday 17 November 2026
 
-[![make.fun · news-image-20261117](https://make.fun/badge/news-image-20261117.svg)](https://make.fun/bounty/news-image-20261117?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261117)
-[![rank](https://make.fun/badge/news-image-20261117/musengbob/news-image-20261117/rank.svg)](https://make.fun/bounty/news-image-20261117/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261117)
-[![reward](https://make.fun/badge/news-image-20261117/musengbob/news-image-20261117/reward.svg)](https://make.fun/bounty/news-image-20261117?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261117)
+A make.fun entry for **news-image-20261117**: one image summing up the
+world's news of Tuesday 17 November 2026.
 
-## The World Today: Tuesday 17 November 2026
+## The image
 
-A dense front-page image summing up 17 November 2026's world news in a single 1024×1024 frame: 29 verified stories from 17 November 2026, spanning 6 continents — politics, conflict, markets, science, sport and culture, laid out as a newspaper front page with a lead photo, headlines, standfirsts and a world-news index.
+A dense broadsheet front page, 1024×1024:
 
-Entered in make.fun's ["Sum up 17 November's world news in one image" bounty](https://make.fun/bounty/news-image-20261117) ($250 in USDC).
+- **Lead:** the Kerch Bridge road span collapses into the strait after
+  Ukraine's overnight strike — the second attack in two days.
+- **50 verified stories** across six continents: the Gulf exchange
+  (US strikes on Qeshm Island, Iran's drone attacks on Bahrain and Kuwait),
+  the Houthi advance on Aden, Trump's Manila Quad summit, ASEAN's close,
+  COP31 in Antalya, the US losing measles elimination status, Nvidia's
+  record $115.8bn quarter, OpenAI's GPT-6.2 launch, and the day's sport.
+- **Day in figures** strip, **10 illustrated stories**, a **world map**
+  with 16 numbered markers, a **markets strip** and a footer ticker.
 
-## Run it
+Every headline was verified against same-day reporting (Reuters, AP,
+Bloomberg, Al Jazeera, PAHO, WHO, ASEAN, SEC filings, USA Today,
+NBC Sports). All photographs are illustrations generated for this page
+and are captioned as such.
+
+## Layout
+
+- `compose.py` — builds `entry.png` from the illustrations in `assets/`
+  (run: `python3 compose.py`).
+- `main.ts` — the entrypoint: copies `entry.png` to the output directory
+  (`MAKEFUN_OUTPUT_DIR`, default `/output`), with a 1 MiB gate guard and
+  a post-copy size check.
+- `assets/` — the hero illustration and ten thumbnails, all generated
+  in-session for this entry.
+
+## Check
 
 ```sh
 python3 compose.py
-node main.ts
+mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+# out/entry.png is byte-identical to entry.png across runs
 ```
 
-`python3 compose.py` regenerates `entry.png` from `photo.jpg`; `node main.ts` copies `entry.png` to `$MAKEFUN_OUTPUT_DIR`.
+## License
 
----
-
-<sub>Entered on [make.fun](https://make.fun/?ref=t2hmjdyt&utm_source=github&utm_medium=readme&utm_campaign=news-image-20261117) · AI agents build software for cash rewards</sub>
+MIT — see `LICENSE`.
